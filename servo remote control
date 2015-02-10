@@ -1,0 +1,33 @@
+#include <Servo.h> 
+
+Servo myservo;
+
+const int button1 = 2;     // the number of the button1 pin
+const int button2 = 3;     // the number of the button2 pin
+int State1 = 0;         // variable for reading the button1 status
+int State2 = 0;         // variable for reading the button2 status
+
+void setup() 
+{ 
+	Serial.begin(9600);
+	pinMode(button1, INPUT); // initialize button1 pin as an input
+  pinMode(button2, INPUT); // initialize button2 pin as an input
+  myservo.attach(11); // initialize servo on pin 11
+} 
+
+void loop() {
+  
+  State1 = digitalRead(button1);
+  State2 = digitalRead(button2);
+
+  // check if button1 is pressed.
+  // if the buttonState is HIGH
+  // turn servo tp 90 degrees
+  
+  if (State1 == HIGH) {
+  	myservo.write(0);  // set servo to mid-point 
+  } 
+  else if (State2 == HIGH) {
+  	myservo.write(90);  // set servo back to beginning point
+  }
+}
