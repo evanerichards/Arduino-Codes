@@ -5,6 +5,9 @@ byte index = 0; // Index into array; where to store the character
 unsigned long lastTime = 0;
 unsigned long elapsedMillis = 0;
 unsigned int currentClockDisplay = 0;
+unsigned int seconds = 0;
+unsigned int minutes = 0;
+unsigned int hours = 0;
 
 int RED_PIN = 8;
 int GREEN_PIN = 7;
@@ -74,12 +77,23 @@ void loop() {
 
       lcd.setCursor(0, 1); //Start writing on the second line
       lcd.print("Time - ");
-      lcd.print("00:");
-      lcd.print("00:");
-      if (currentClockDisplay < 10){ // pad in leading zeros
+      hours = currentClockDisplay/3600;
+       if (hours < 10){ // pad in leading zeros
         lcd.print("0");
       }
-      lcd.print(currentClockDisplay);
+      lcd.print(hours);
+            lcd.print(":");
+      minutes = (currentClockDisplay/60)%60;
+      if (minutes < 10){ // pad in leading zeros
+        lcd.print("0");
+      }
+      lcd.print(minutes);
+            lcd.print(":");
+      seconds = currentClockDisplay%60;
+      if (seconds < 10){ // pad in leading zeros
+        lcd.print("0");
+      }
+      lcd.print(seconds);
     }
   }
 }
