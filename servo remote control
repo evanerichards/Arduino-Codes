@@ -26,8 +26,12 @@ void loop() {
   
   if (State1 == HIGH) {
   	myservo.write(0);  // set servo to mid-point 
+  	Serial.println("B1 pressed");    
+     	Serial.println("Moved servo to 0 degrees");
   } 
   else if (State2 == HIGH) {
   	myservo.write(90);  // set servo back to beginning point
+  	Serial.println("B2 pressed");    
+     	Serial.println("Moved servo to 90 degrees");
   }
 }
