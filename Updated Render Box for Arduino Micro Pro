@@ -1,0 +1,85 @@
+#include <LiquidCrystal.h>
+char inData[16]; // Allocate some space for the string
+char inChar; // Where to store the character read
+byte index = 0; // Index into array; where to store the character
+unsigned long lastTime = 0;
+unsigned long elapsedMillis = 0;
+unsigned int currentClockDisplay = 0;
+
+int RED_PIN = 8;
+int GREEN_PIN = 7;
+// initialize the library with the numbers of the interface pins
+LiquidCrystal lcd(14, 15, 5, 4, 3, 2);
+bool isOn;
+
+void setup() {
+    Serial.begin(9600);
+    pinMode(RED_PIN, OUTPUT);        // sets the digital pin as output
+    pinMode(GREEN_PIN, OUTPUT);      // sets the digital pin as output
+    digitalWrite(RED_PIN, LOW);      //Start with red light off
+    digitalWrite(GREEN_PIN, LOW);    //Start with green light off
+    lcd.begin(16, 2);                // Set up the LCD's number of columns and rows 
+    lcd.print("Render Tool");      // Print a message to the LCD.
+}
+
+void loop() {
+
+  
+  if(Serial.available()){
+    char serIn = (char) Serial.read(); //Read byte from serial buffer
+
+    if (serIn == 'X') { //If the byte is "X" (for start) the red light turns on
+      digitalWrite(RED_PIN, HIGH); //Turn the red light on
+      digitalWrite(GREEN_PIN, LOW); //Turn the green light off
+      isOn = true;
+      lastTime = millis(); //Since "start" was indicated, start keeping track of the time
+    }
+    else if (serIn = 'Y') {  //If the byte is "Y" (for finish) the green light turns on
+      digitalWrite(RED_PIN, LOW); //Turn the red light off
+      digitalWrite(GREEN_PIN, HIGH); //Turn the green light on
+      isOn = false;
+      // The following two lines were added at the last revision. They cause the timer to be reset to 0 at the start of each render.
+      currentClockDisplay = 0;
+      elapsedMillis = 0;
+      delay(1000);
+      while(Serial.available() > 0) // Don't read unless
+  {
+      if(index < 15) // One less than the size of the array
+      {
+          inChar = Serial.read(); // Read a character
+          inData[index] = inChar; // Store it
+          index++; // Increment where to write next
+          inData[index] = '\0'; // Null terminate the string
+      }
+  }
+      lcd.setCursor(0, 1); //Start writing on the second line
+      lcd.print(inData);
+      
+    }
+  }
+  
+
+  //If the stopwatch is on, add the elpased number of millis to elapsedMillis, and, if needed, update the LCD.
+  //If on, every time we loop, we add how many milliseconds have passed since the last time we looped
+  if(isOn){
+    unsigned long now = millis(); //Capture the current millis
+    elapsedMillis += now - lastTime; //Calculate how many millis have passed since the last loop and add to elapsedMillis;
+    lastTime = now; //update the last time we checked.
+
+    if( elapsedMillis / 1000 > currentClockDisplay ){ //Avoid updating LCD more than once per second
+      //It may not be important to slow down how often this updates. I'm just thinking that maybe 
+      //it takes a bit of time to update the display, and maybe it's not wise to update it with the 
+      //same characters over and over for no reason.
+      currentClockDisplay = elapsedMillis / 1000;
+
+      lcd.setCursor(0, 1); //Start writing on the second line
+      lcd.print("Time - ");
+      lcd.print("00:");
+      lcd.print("00:");
+      if (currentClockDisplay < 10){ // pad in leading zeros
+        lcd.print("0");
+      }
+      lcd.print(currentClockDisplay);
+    }
+  }
+}
